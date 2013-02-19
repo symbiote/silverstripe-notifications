@@ -26,13 +26,27 @@ class EmailNotificationSender implements NotificationChannel {
 	/**
 	 * Send a notification directly to a single user
 	 *
-	 * @param UserNotification $notification
+	 * @param UserNotification | SystemNotification $notification
 	 * @param string $email
 	 * @param array $data
 	 */
 	public function sendToUser($notification, $context, $user, $data) {
 		$subject = $notification->formatTitle($context, $user, $data);
-		$message = $notification->formatNotificationText($context, $user, $data);
+		$message = nl2br($notification->formatNotificationText($context, $user, $data));
+
+		if($notification->Template){
+			try {
+				$body = ArrayData::create(array(
+					'Subject' => $subject, 
+					'Content' => $message,
+					'ThemeDir' => SSViewer::get_theme_folder()
+				))->renderWith($notification->Template);	
+			} catch (Exception $e) {
+				$body = $message;
+			}
+		}else{
+			$body = $message;
+		}
 		
 		$from = SiteConfig::current_site_config()->ReturnEmailAddress;
 		
@@ -42,7 +56,7 @@ class EmailNotificationSender implements NotificationChannel {
 		}
 		 
 		$email = new Email($from, $to, $subject);
-		$email->setBody(nl2br($message));
+		$email->setBody($body);
 		$email->send();
 	}
 }

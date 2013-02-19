@@ -12,6 +12,7 @@ class SystemNotification extends DataObject {
 		'Description'		=> 'Text',
 		'NotificationText'	=> 'Text',
 		'NotifyOnClass'		=> 'Varchar(32)',
+		'Template'			=> 'Varchar()'
 //		'SendDate'			=> 'SS_Datetime',
 //		'SendDifference'	=> 'Int',	// should we offset from a particular date?
 //		'Repeat'			=> 'Int',	// how many seconds after SendDate we should do another notification? Only has effect
@@ -74,7 +75,7 @@ class SystemNotification extends DataObject {
 			}
 		}
 
-		$availableKeywords->setContent('<p>Available Keywords: </p><ul><li>'.implode('</li><li>', $keywords).'</li></ul>');
+		$availableKeywords->setContent('<div class="field"><div class="middleColumn"><p><u>Available Keywords:</u> </p><ul><li>$'.implode('</li><li>$', $keywords).'</li></ul></div></div>');
 
 		$identifiers = NotificationService::get_identifiers();
 		if (count($identifiers)) {
@@ -91,6 +92,7 @@ class SystemNotification extends DataObject {
 				new TextField('Title', _t('SystemNotification.TITLE', 'Title')),
 				new TextField('Description', _t('SystemNotification.DESCRIPTION', 'Description')),
 				new DropdownField('NotifyOnClass', _t('SystemNotification.NOTIFY_ON_CLASS', $relevantMsg), $types),
+				new TextField('Template', _t('SystemNotification.TEMPLATE', 'Template (Optional)')),
 				new TextareaField('NotificationText', _t('SystemNotification.TEXT', 'Text')),
 				$availableKeywords
 			)
@@ -172,5 +174,9 @@ class SystemNotification extends DataObject {
 		}
 
 		return $text;
+	}
+
+	public function forTemplate(){
+		return self::$render_with_template ? $this->renderWith(self::$render_with_template) : $this->NotificationText;
 	}
 }
