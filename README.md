@@ -21,14 +21,16 @@ Usage Overview
 
 ### Creating System Notifications
 
-1. In your _config yml file, add an identifier for each notification you require. This allows you to lookup Notification objects in the database from your code. 
+In your _config yml file, add an identifier for each notification you require. This allows you to lookup Notification objects in the database from your code. 
 
-	NotificationService:
-	  identifiers:
-	    - 'NAME_OF_NOTIFICATION1'
-	    - 'NAME_OF_NOTIFICATION2'
+```
+NotificationService:
+  identifiers:
+    - 'NAME_OF_NOTIFICATION1'
+    - 'NAME_OF_NOTIFICATION2'
+```
 
-2. Add the NotifiedOn interface to any dataobjects that are relevant to the notifications you will be sending. This is required so the Notifications module can look up the methods (step 3) on your object to send the notification.
+Add the NotifiedOn interface to any dataobjects that are relevant to the notifications you will be sending. This is required so the Notifications module can look up the methods (step 3) on your object to send the notification.
 
 ```php
 class MyDataObject extends DataObject implements NotifiedOn, 
@@ -36,7 +38,7 @@ class MyDataObject extends DataObject implements NotifiedOn,
 
 Run ?flush=all
 
-3. Define the following interface methods on the Object being notified on. 
+Define the following interface methods on the Object being notified on. 
 
 ```php
 /**
@@ -64,7 +66,7 @@ public function getKeyword($keyword);
 public function getRecipients($event);
 ```
 
-4. Send a Notification when required from your code 
+Send a Notification when required from your code 
 
 	singleton('NotificationService')->addNotificationSender('email', new EmailNotificationSender());
 	singleton('NotificationService')->setChannels(array('email', 'log'));
