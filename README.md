@@ -33,7 +33,7 @@ NotificationService:
 Add the NotifiedOn interface to any dataobjects that are relevant to the notifications you will be sending. This is required so the Notifications module can look up the methods (step 3) on your object to send the notification.
 
 ```php
-class MyDataObject extends DataObject implements NotifiedOn, 
+class MyDataObject extends DataObject implements NotifiedOn
 ```
 
 Run ?flush=all
@@ -67,10 +67,11 @@ public function getRecipients($event);
 ```
 
 Send a Notification when required from your code 
-
-	singleton('NotificationService')->addNotificationSender('email', new EmailNotificationSender());
-	singleton('NotificationService')->setChannels(array('email', 'log'));
-	singleton('NotificationService')->notify('NOTIFICATION_IDENTIFIER', $this);
+```php
+singleton('NotificationService')->addNotificationSender('email', new EmailNotificationSender());
+singleton('NotificationService')->setChannels(array('email', 'log'));
+singleton('NotificationService')->notify('NOTIFICATION_IDENTIFIER', $this);
+```
 
 
 
