@@ -77,9 +77,9 @@ class SystemNotification extends DataObject {
 
 		$availableKeywords->setContent('<div class="field"><div class="middleColumn"><p><u>Available Keywords:</u> </p><ul><li>$'.implode('</li><li>$', $keywords).'</li></ul></div></div>');
 
-		$identifiers = NotificationService::get_identifiers();
+		$identifiers = Config::inst()->get('NotificationService', 'identifiers');
 		if (count($identifiers)) {
-			$identifiers = array_combine(NotificationService::get_identifiers(), NotificationService::get_identifiers());
+			$identifiers = array_combine($identifiers, $identifiers);
 		}
 		
 		$fields = new FieldList();
@@ -146,7 +146,7 @@ class SystemNotification extends DataObject {
 	 * @param array $extraKeywords 
 	 */
 	protected function format($text, $context, $user=null, $extraKeywords=array()) {
-		$memberKeywords = Object::get_static('Member', 'db');
+		$memberKeywords = Config::inst()->get('Member', 'db');
 
 		// extract certain keywords
 		if (preg_match_all('|\$([a-z]+)|i', $text, $matches)) {

@@ -30,7 +30,7 @@ class NotificationService {
 	 *
 	 * @var array
 	 */
-	protected static $identifiers = array();
+	private static $identifiers = array();
 
 	/**
 	 * The objects to use for actually sending a notification, indexed
@@ -56,23 +56,6 @@ class NotificationService {
 		$this->channels = array('log');
 	}
 	
-	/**
-	 * Add an identifier
-	 *
-	 * @param string $i 
-	 */
-	public static function add_identifier($i) {
-		self::$identifiers[] = $i;
-	}
-	
-	/**
-	 * Get a list of all identifiers
-	 *
-	 * @param string $i 
-	 */
-	public static function get_identifiers() {
-		return self::$identifiers;
-	}
 
 	/**
 	 * Set the list of channels this notification service should use for all 

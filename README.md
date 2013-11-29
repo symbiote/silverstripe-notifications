@@ -8,7 +8,7 @@ Maintainer Contacts
 
 Requirements
 ------------
-* SilverStripe 3.0 + 
+* SilverStripe 3.1 +
 
 Installation Instructions
 -------------------------
@@ -21,38 +21,48 @@ Usage Overview
 
 ### Creating System Notifications
 
-1. In your _config file, add an identifier for each notification you require. This allows you to lookup Notification objects in the database from your code. 
+1. In your _config yml file, add an identifier for each notification you require. This allows you to lookup Notification objects in the database from your code. 
 
-	NotificationService::add_identifier('NAME_OF_NOTIFICATION');
+	NotificationService:
+	  identifiers:
+	    - 'NAME_OF_NOTIFICATION1'
+	    - 'NAME_OF_NOTIFICATION2'
 
 2. Add the NotifiedOn interface to any dataobjects that are relevant to the notifications you will be sending. This is required so the Notifications module can look up the methods (step 3) on your object to send the notification.
 
-	class MyDataObject extends DataObject implements NotifiedOn, ?flush=all
+```php
+class MyDataObject extends DataObject implements NotifiedOn, 
+```
+
+Run ?flush=all
 
 3. Define the following interface methods on the Object being notified on. 
 
-	/**
-	 * Return a list of all available keywords in the format 
-	 * array('keyword' => 'A description')
-	 * @return array
-	 */
-	public function getAvailableKeywords();
-
-	/**
-	 * Gets a replacement for a keyword
-	 * @param string $keyword
-	 * @return string
-	 */
-	public function getKeyword($keyword);
-	
-	/**
-	 * Gets the list of recipients for a given notification event, based on this object's 
-	 * state. 
-	 * $event The identifier of the event that triggered this notification
-	 * @return array An array of Member objects	
-	 */
-	public function getRecipients($event);
-
+```php
+/**
+ * Return a list of all available keywords in the format 
+ * array('keyword' => 'A description')
+ * @return array
+ */
+public function getAvailableKeywords();
+```
+```php
+/**
+ * Gets a replacement for a keyword
+ * @param string $keyword
+ * @return string
+ */
+public function getKeyword($keyword);
+```
+```php
+/**
+ * Gets the list of recipients for a given notification event, based on this object's 
+ * state. 
+ * $event The identifier of the event that triggered this notification
+ * @return array An array of Member objects	
+ */
+public function getRecipients($event);
+```
 
 4. Send a Notification when required from your code 
 

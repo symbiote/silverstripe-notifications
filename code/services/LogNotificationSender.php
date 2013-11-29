@@ -32,6 +32,7 @@ class LogNotificationSender implements NotificationChannel {
 	 * @param array $data
 	 */
 	public function sendToUser($notification, $context, $user, $data) {
-		singleton('SiteUtils')->log("Sending ".$notification->formatTitle($context, $user, $data). ' to user '.$user->Email);
+		$message = 'Sending ' . $notification->formatTitle($context, $user, $data) . ' to user ' . $user->Email;
+		SS_Log::log($message, SS_Log::NOTICE);
 	}
 }
