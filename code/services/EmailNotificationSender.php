@@ -7,6 +7,7 @@
  * @author Marcus Nyeholt <marcus@silverstripe.com.au>
  */
 class EmailNotificationSender implements NotificationChannel {
+
 	public function __construct() {}
 
 	/**
@@ -32,6 +33,7 @@ class EmailNotificationSender implements NotificationChannel {
 	 */
 	public function sendToUser($notification, $context, $user, $data) {
 		$subject = $notification->formatTitle($context, $user, $data);
+
 		$message = nl2br($notification->formatNotificationText($context, $user, $data));
 
 		if($notification->Template){
@@ -39,7 +41,9 @@ class EmailNotificationSender implements NotificationChannel {
 				$body = ArrayData::create(array(
 					'Subject' => $subject, 
 					'Content' => $message,
-					'ThemeDir' => SSViewer::get_theme_folder()
+					'ThemeDir' => SSViewer::get_theme_folder(),
+					'SiteConfig' => SiteConfig::current_site_config(),
+					'Context' => $context
 				))->renderWith($notification->Template);	
 			} catch (Exception $e) {
 				$body = $message;

@@ -69,9 +69,12 @@ class SystemNotification extends DataObject {
 		if ($this->NotifyOnClass) {
 			$dummy = singleton($this->NotifyOnClass);
 			if ($dummy instanceof NotifiedOn) {
-				foreach ($dummy->getAvailableKeywords() as $keyword => $desc) {
-					$keywords[] = '<strong>'.$keyword.'</strong> - '.$desc;
+				if(is_array($dummy->getAvailableKeywords())){
+					foreach ($dummy->getAvailableKeywords() as $keyword => $desc) {
+						$keywords[] = '<strong>'.$keyword.'</strong> - '.$desc;
+					}	
 				}
+				
 			}
 		}
 

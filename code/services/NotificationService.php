@@ -66,6 +66,7 @@ class NotificationService {
 	 */
 	public function setChannels($senders) {
 		$this->channels = $senders;
+		return $this;
 	}
 
 	/**
@@ -77,6 +78,7 @@ class NotificationService {
 	 */
 	public function addNotificationSender($channel, $sender) {
 		$this->notificationChannels[$channel] = $sender;
+		return $this;
 	}
 
 	/**
