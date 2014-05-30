@@ -1,6 +1,6 @@
 {
 	"name": "sheadawson/silverstripe-notifications",
-	"description": "Send CMS managed system notifications from code",
+	"description": "Send CMS editable system notifications from code",
 	"type": "silverstripe-module",
     "keywords": ["silverstripe", "notifications"],
 	"license": "BSD-3-Clause",
@@ -17,8 +17,7 @@
 	"require": {
 		"php": ">=5.3.2",
 		"silverstripe/cms": "~3.1",
-		"silverstripe/framework": "~3.1",
-		"silverstripe-themes/multivaluefield": "dev"
+		"silverstripe/framework": "~3.1"
 	},
 	"minimum-stability": "dev",
     "extra": {

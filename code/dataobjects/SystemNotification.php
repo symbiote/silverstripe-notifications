@@ -1,71 +1,92 @@
 <?php
-
 /**
- *
- * @author marcus@silverstripe.com.au
+ * SystemNotification
+ * @author marcus@silverstripe.com.au, shea@livesource.co.nz
  * @license http://silverstripe.org/bsd-license/
  */
 class SystemNotification extends DataObject {
+	
+	/**
+	 * A list of all the notifications that the system manages. 
+	 * @var array
+	 */
+	private static $identifiers = array();
+
+	/**
+	 * A list of globally available keywords for all NotifiedOn implementors
+	 * @var array
+	 */
+	private static $global_keywords = array();
+
+	/**
+	 * Name of a template file to render all notifications with
+	 * Note: it's up to the NotificationSender to decide whether or not to use it
+	 * @var string
+	 */
+	private static $default_template;
+
 	public static $db = array(
 		'Identifier'		=> 'Varchar',		// used to reference this notification from code
 		'Title'				=> 'Varchar(255)',
 		'Description'		=> 'Text',
 		'NotificationText'	=> 'Text',
 		'NotifyOnClass'		=> 'Varchar(32)',
-		'Template'			=> 'Varchar()'
-//		'SendDate'			=> 'SS_Datetime',
-//		'SendDifference'	=> 'Int',	// should we offset from a particular date?
-//		'Repeat'			=> 'Int',	// how many seconds after SendDate we should do another notification? Only has effect
-//										// if TriggerOn is Schedule
-//		'FieldsToNotifyOn'	=> 'MultiValueField', // A list of object field names that should trigger notification
-//
-//		'LastSentOn'		=> 'SS_Datetime',
-		
-//		'TriggerOn'			=> "Enum('Changed,Date')", // when to trigger this notification
+		'CustomTemplate'	=> 'Varchar'
 	);
 	
-	public static $many_many = array(
-		'Users'			=> 'Member',
-		'Groups'		=> 'Group',
-	);
-	
-	/**
-	 * A list of globally available keywords
-	 *
-	 * @var array
-	 */
-	protected static $global_keywords = array();
-	
-	/**
-	 * Adds a globally available keyword value
-	 *
-	 * @param string $k
-	 * @param string $v 
-	 */
-	public static function add_keyword($k, $v) {
-		self::$global_keywords[$k] = $v;
-	}
-
 	/**
 	 * @return FieldList 
 	 */
 	public function getCMSFields() {
+		// Get NotifiedOn implementors
 		$types = ClassInfo::implementorsOf('NotifiedOn');
 		$types = array_combine($types, $types);
 		unset($types['NotifyOnThis']);
-
-		if (!$types) {
-			$types = array();
-		}
+		if (!$types) $types = array();
 		array_unshift($types, '');
+
+		// Available keywords
+		$keywords = $this->getKeywords();
+		if(count($keywords)){
+			$availableKeywords = '<div class="field"><div class="middleColumn"><p><u>Available Keywords:</u> </p><ul><li>$'.implode('</li><li>$', $keywords).'</li></ul></div></div>';
+		}else{
+			$availableKeywords = "Available keywords will be shown if you select a NotifyOnClass";
+		}
 		
+		// Identifiers
+		$identifiers = $this->config()->get('identifiers');
+		if (count($identifiers)) $identifiers = array_combine($identifiers, $identifiers);
+		
+		$fields = FieldList::create();
+
+		$relevantMsg = 'Relevant for (note: this notification will only be sent if the context of raising the notification is of this type)';
+		$fields->push(TabSet::create('Root', 
+			Tab::create('Main', 
+				DropdownField::create('Identifier', _t('SystemNotification.IDENTIFIER', 'Identifier'), $identifiers),
+				TextField::create('Title', _t('SystemNotification.TITLE', 'Title')),
+				TextField::create('Description', _t('SystemNotification.DESCRIPTION', 'Description')),
+				DropdownField::create('NotifyOnClass', _t('SystemNotification.NOTIFY_ON_CLASS', $relevantMsg), $types),
+				TextField::create('CustomTemplate', _t('SystemNotification.TEMPLATE', 'Template (Optional)'))->setAttribute('placeholder', $this->config()->get('default_template')),
+				TextareaField::create('NotificationText', _t('SystemNotification.TEXT', 'Text')),
+				LiteralField::create('AvailableKeywords', $availableKeywords)
+			)
+		));
+
+		return $fields;
+	}
+
+
+	/**
+	 * Get a list of available keywords to help the cms user know what's available
+	 * @return array
+	 **/
+	public function getKeywords(){
 		$keywords = array();
 		
-		foreach (self::$global_keywords as $k => $v) {
+		foreach ($this->config()->get('global_keywords') as $k => $v) {
 			$keywords[] = '<strong>'.$k.'</strong>';
 		}
 		
-		$availableKeywords = new LiteralField('AvailableKeywords', "Available keywords will be shown if you select a NotifyOnClass");
 		if ($this->NotifyOnClass) {
 			$dummy = singleton($this->NotifyOnClass);
 			if ($dummy instanceof NotifiedOn) {
@@ -74,44 +95,22 @@ class SystemNotification extends DataObject {
 						$keywords[] = '<strong>'.$keyword.'</strong> - '.$desc;
 					}	
 				}
-				
 			}
 		}
 
-		$availableKeywords->setContent('<div class="field"><div class="middleColumn"><p><u>Available Keywords:</u> </p><ul><li>$'.implode('</li><li>$', $keywords).'</li></ul></div></div>');
-
-		$identifiers = Config::inst()->get('NotificationService', 'identifiers');
-		if (count($identifiers)) {
-			$identifiers = array_combine($identifiers, $identifiers);
-		}
-		
-		$fields = new FieldList();
-
-		$relevantMsg = 'Relevant for (note: this notification will only be sent if the 
-			context of raising the notification is of this type)';
-		$fields->push(new TabSet('Root', 
-			new Tab('Main', 
-				new DropdownField('Identifier', _t('SystemNotification.IDENTIFIER', 'Identifier'), $identifiers),
-				new TextField('Title', _t('SystemNotification.TITLE', 'Title')),
-				new TextField('Description', _t('SystemNotification.DESCRIPTION', 'Description')),
-				new DropdownField('NotifyOnClass', _t('SystemNotification.NOTIFY_ON_CLASS', $relevantMsg), $types),
-				new TextField('Template', _t('SystemNotification.TEMPLATE', 'Template (Optional)')),
-				new TextareaField('NotificationText', _t('SystemNotification.TEXT', 'Text')),
-				$availableKeywords
-			)
-		));
-
-		return $fields;
+		return $keywords;
 	}
+
 
 	/**
 	 * Get a list of recipients from the notification with the given context
 	 * 
 	 * @param DataObject $context
 	 *				The context object this notification is attached to. 
+	 * @return ArrayList
 	 */
 	public function getRecipients($context = null) {
-		$recipients = new ArrayList();
+		$recipients = ArrayList::create();
 
 		// if we have a context, use that for returning the recipients
 		if ($context && $context instanceof NotifiedOn) {
@@ -127,59 +126,71 @@ class SystemNotification extends DataObject {
 		// otherwise load with a preconfigured list of recipients
 		return $recipients;
 	}
-	
-	/**
-	 * Handle calls to format* methods to format content keywords appropriately
-	 */
-	public function __call($method, $arguments) {
-		if (strpos($method, 'format') === 0) {
-			$property = substr($method, 6);
-			$text = $this->$property;
-			return $this->format($text, $arguments[0], $arguments[1], $arguments[2]);
-		}
 
-		return parent::__call($method, $arguments);
-	}
 
 	/**
 	 * Format text with given keywords etc
 	 *
+	 * @param sting $text
 	 * @param DataObject $context
 	 * @param Member $user
-	 * @param array $extraKeywords 
+	 * @param array $extraData 
+	 * @return $string
 	 */
-	protected function format($text, $context, $user=null, $extraKeywords=array()) {
-		$memberKeywords = Config::inst()->get('Member', 'db');
+	public function format($text, $context, $user=null, $extraData=array()) {
+		$data = $this->getTemplateData($context, $user, $extraData);
 
-		// extract certain keywords
-		if (preg_match_all('|\$([a-z]+)|i', $text, $matches)) {
-			foreach ($matches[1] as $keyword) {
-				$rep = null;
-				
-				if ($context instanceof NotifiedOn) {
-					$rep = $context->getKeyword($keyword);
-				}
-				
-				if (!$rep && $user && isset($memberKeywords[$keyword])) {
-					$rep = $user->$keyword;
-				}
+		// render
+		$viewer = new SSViewer_FromString($text);
+		try {
+			$string = $viewer->process($data);	
+		} catch (Exception $e) {
+			$string = $text;
+		}
+		return $string; 
+	}
 
-				if (!$rep && isset($extraKeywords[$keyword])) {
-					$rep = $extraKeywords[$keyword];
-				}
-				
-				if (!$rep && isset(self::$global_keywords[$keyword])) {
-					$rep = self::$global_keywords[$keyword];
-				}
 
-				$text = str_replace('$'.$keyword, $rep, $text);
-			}
+	/**
+	 * Get compiled template data to render a string with
+	 *
+	 * @param DataObject $context
+	 * @param Member $user
+	 * @param array $extraData 
+	 * @return ArrayData
+	 */
+	public function getTemplateData($context, $user=null, $extraData=array()){
+		// useful global data
+		$data = array(
+			'ThemeDir' => SSViewer::get_theme_folder(),
+			'SiteConfig' => SiteConfig::current_site_config()
+		);
+
+		// the context object, keyed by it's class name
+		$data[$context->ClassName] = $context;
+
+		// data as defined by the context object
+		$contextData = $context->getNotificationTemplateData();
+		if(is_array($contextData)){
+			$data = array_merge($data, $contextData);	
 		}
 
-		return $text;
+		// the member the notification is being sent to  
+		$data['Member'] = $user;
+
+		// extra data
+		$data = array_merge($data, $extraData);
+
+		return ArrayData::create($data);
 	}
 
-	public function forTemplate(){
-		return self::$render_with_template ? $this->renderWith(self::$render_with_template) : $this->NotificationText;
+
+	/**
+	 * Get the custom or default template to render this notification with
+	 * @return string
+	 */
+	public function getTemplate(){
+		return $this->CustomTemplate ? $this->CustomTemplate : $this->config()->get('default_template');
 	}
+
 }

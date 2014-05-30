@@ -1,3 +1,5 @@
 <?php
-/* All code covered by the BSD license located at http://silverstripe.org/bsd-license/ */
 
+if (basename(dirname(__FILE__)) != 'notifications') {
+	throw new Exception('The notifications module is not installed in correct directory. The directory should be named "notifications"');
+}

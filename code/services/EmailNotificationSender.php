@@ -1,14 +1,17 @@
 <?php
-/* All code covered by the BSD license located at http://silverstripe.org/bsd-license/ */
-
 /**
- * A notification sender that sends via email
- *
- * @author Marcus Nyeholt <marcus@silverstripe.com.au>
+ * EmailNotificationSender
+ * @author marcus@silverstripe.com.au, shea@livesource.co.nz
+ * @license http://silverstripe.org/bsd-license/
  */
-class EmailNotificationSender implements NotificationChannel {
+class EmailNotificationSender extends Object implements NotificationSender {
 
-	public function __construct() {}
+	/**
+	 * Email Address to send email notifications from 
+	 * @var string
+	 */
+	private static $send_notifications_from; 
+
 
 	/**
 	 * Send a notification via email to the selected users
@@ -24,27 +27,23 @@ class EmailNotificationSender implements NotificationChannel {
 		}
 	}
 
+
 	/**
 	 * Send a notification directly to a single user
 	 *
-	 * @param UserNotification | SystemNotification $notification
+	 * @param SystemNotification $notification
 	 * @param string $email
 	 * @param array $data
 	 */
 	public function sendToUser($notification, $context, $user, $data) {
-		$subject = $notification->formatTitle($context, $user, $data);
+		$subject = $notification->format($notification->Title, $context, $user, $data);
+		$message = $notification->format(nl2br($notification->NotificationText), $context, $user, $data);
 
-		$message = nl2br($notification->formatNotificationText($context, $user, $data));
-
-		if($notification->Template){
+		if($template = $notification->getTemplate()){
+			$templateData = $notification->getTemplateData($context, $user, $data);
+			$templateData->setField('Body', $message);
 			try {
-				$body = ArrayData::create(array(
-					'Subject' => $subject, 
-					'Content' => $message,
-					'ThemeDir' => SSViewer::get_theme_folder(),
-					'SiteConfig' => SiteConfig::current_site_config(),
-					'Context' => $context
-				))->renderWith($notification->Template);	
+				$body = $templateData->renderWith($template);
 			} catch (Exception $e) {
 				$body = $message;
 			}
@@ -52,13 +51,17 @@ class EmailNotificationSender implements NotificationChannel {
 			$body = $message;
 		}
 		
-		$from = SiteConfig::current_site_config()->ReturnEmailAddress;
-		
+		$from = $this->config()->get('send_notifications_from');
 		$to = $user->Email;
 		if (!$to && method_exists($user, 'getEmailAddress')) {
 			$to = $user->getEmailAddress();
 		}
-		 
+
+		// log 
+		$message = "Sending $subject to $to";
+		SS_Log::log($message, SS_Log::NOTICE);
+
+		// send
 		$email = new Email($from, $to, $subject);
 		$email->setBody($body);
 		$email->send();

@@ -1,61 +1,66 @@
-SilverStripe Notifications Module
-========================================
+# SilverStripe Notifications Module
 
-Maintainer Contacts
--------------------
+Send CMS managed system email notifications from code.
+
+## Maintainer Contacts
 *  Marcus Nyeholt (<marcus@silverstripe.com.au>)
 *  Shea Dawson (<shea@silverstripe.com.au>)
 
-Requirements
-------------
+## Requirements
 * SilverStripe 3.1 +
 
-Installation Instructions
--------------------------
+## Installation Instructions
 
-1. Place this directory in the root of your SilverStripe installation.
-2. Visit yoursite.com/dev/build to rebuild the database.
+```
+composer require sheadawson/silverstripe-notifications
+```
 
-Usage Overview
---------------
+## Creating System Notifications
 
-### Creating System Notifications
-
+### 1)
 In your _config yml file, add an identifier for each notification you require. This allows you to lookup Notification objects in the database from your code. 
 
 ```
-NotificationService:
+SystemNotification:
   identifiers:
     - 'NAME_OF_NOTIFICATION1'
     - 'NAME_OF_NOTIFICATION2'
 ```
 
-Add the NotifiedOn interface to any dataobjects that are relevant to the notifications you will be sending. This is required so the Notifications module can look up the methods (step 3) on your object to send the notification.
+### 2)
+Add the NotifiedOn interface to any dataobjects that are relevant to the notifications you will be sending. This is required so the Notifications module can look up the below methods on your object to send the notification.
 
 ```php
-class MyDataObject extends DataObject implements NotifiedOn
+class MyDataObject extends DataObject implements NotifiedOn {
+	...
 ```
-
-Run ?flush=all
 
 Define the following interface methods on the Object being notified on. 
 
 ```php
-/**
- * Return a list of all available keywords in the format 
- * array('keyword' => 'A description')
+**
+ * Return a list of available keywords in the format 
+ * array('keyword' => 'A description') to help users format notification fields
  * @return array
  */
 public function getAvailableKeywords();
 ```
 ```php
 /**
- * Gets a replacement for a keyword
- * @param string $keyword
- * @return string
+ * Gets an associative array of data that can be accessed in
+ * notification fields and templates 
+ * @return array
  */
-public function getKeyword($keyword);
+public function getNotificationTemplateData();
 ```
+
+Note: the follow template data is automatically included:
+
+* $ThemeDir
+* $SiteConfig
+* $MyDataObject (whatever the ClassName of your NotifiedOn DataObject is)
+* $Member (The Member object this message is being sent to)
+
 ```php
 /**
  * Gets the list of recipients for a given notification event, based on this object's 
@@ -66,17 +71,37 @@ public function getKeyword($keyword);
 public function getRecipients($event);
 ```
 
-Send a Notification when required from your code 
+Note: getRecipients() can return an array of any objects, as long as they have an Email property or method
+
+### 3)
+
+Create a notification in the Notifications model admin, in the CMS.
+
+### 4)
+Send the notification from your code, where $contextObject is an instance of the DataObject being NotifiedOn 
 ```php
-singleton('NotificationService')->addNotificationSender('email', new EmailNotificationSender());
-singleton('NotificationService')->setChannels(array('email', 'log'));
-singleton('NotificationService')->notify('NOTIFICATION_IDENTIFIER', $this);
+singleton('NotificationService')->notify('NOTIFICATION_IDENTIFIER', $contextObject);
 ```
 
+## Templates
 
+Notifications can be rendered with .ss templates. This is useful if you want to have a header/footer in your email notifications. You can either specify a template on a per/notification basis in the CMS, and/or set a default template for all notifications to be rendered with:
 
-TODO
-----
+```
+SystemNotification:
+  default_template: EmailNotification
+```
 
-* Finish UserNotifications part of the module
-* Render Notification in template
+In your templates, you render the notification text with the $Body variable.
+
+## Configuration
+
+You will probably want to configure a send_from email address - 
+```
+EmailNotificationSender:
+  send_notifications_from: 'notifications@example.com'
+```  
+
+## TODO 
+
+* Test with QueuedJobs module for handling large amounts of notifications in configurable batches/queues

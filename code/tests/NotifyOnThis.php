@@ -40,23 +40,24 @@ class NotifyOnThis extends DataObject implements NotifiedOn, TestOnly {
 		
 		return $this->availableKeywords;
 	}
+
 	
 	/**
-	 * Gets a replacement for a keyword
+	 * Gets an associative array of data that can be accessed in
+	 * notification fields and templates 
+	 * @return array
 	 */
-	public function getKeyword($keyword) {
-		$k = $this->getAvailableKeywords();
-		if (isset($k[$keyword])) {
-			return $this->$keyword;
-		}
+	public function getNotificationTemplateData(){
+		return array();
 	}
+	
 	
 	/**
 	 * Gets the list of recipients for a given notification event, based on this object's 
 	 * state. 
 	 * 
-	 * @param $event
-	 *				The identifier of the event that triggered this notification
+	 * @param string $event
+	 *				The Identifier of the notification being sent
 	 */
 	public function getRecipients($event) {
 		// this should actually be specified on the object directly. If it's hitting here, 

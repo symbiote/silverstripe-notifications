@@ -1,30 +1,28 @@
 <?php
-
 /**
- * Indicates that this object gets notified on. 
- *
- * @author marcus@silverstripe.com.au
+ * NotifiedOn
+ * @author marcus@silverstripe.com.au, shea@livesource.co.nz
  * @license http://silverstripe.org/bsd-license/
  */
 interface NotifiedOn {
 	/**
-	 * Return a list of all available keywords in the format 
-	 * array('keyword' => 'A description')
+	 * Return a list of available keywords in the format 
+	 * array('keyword' => 'A description') to help users format notification fields
 	 * @return array
 	 */
 	public function getAvailableKeywords();
 
 	/**
-	 * Gets a replacement for a keyword
-	 * @param string $keyword
-	 * @return string
+	 * Gets an associative array of data that can be accessed in
+	 * notification fields and templates 
+	 * @return array
 	 */
-	public function getKeyword($keyword);
+	public function getNotificationTemplateData();
 	
 	/**
 	 * Gets the list of recipients for a given notification event, based on this object's 
 	 * state. 
-	 * $event The identifier of the event that triggered this notification
+	 * $event The Identifier of the notification being sent
 	 * @return array An array of Member objects	
 	 */
 	public function getRecipients($event);

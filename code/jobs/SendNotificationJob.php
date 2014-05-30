@@ -18,7 +18,7 @@ class SendNotificationJob extends AbstractQueuedJob implements QueuedJob {
 	}
 	
 	public function getNotification() {
-		return DataObject::get_by_id('SystemNotification', $this->notificationID);
+		return SystemNotification::get()->byID($this->notificationID);
 	}
 
 	public function getContext() {
@@ -54,14 +54,14 @@ class SendNotificationJob extends AbstractQueuedJob implements QueuedJob {
 		$recipients = $notification->getRecipients($this->getContext());
 		$sendTo = array();
 		if ($recipients) {
-			if ($recipients instanceof MultiValueField) {
+			if(is_array($recipients) || $recipients instanceof DataList){
+				foreach ($recipients as $r) {
+					$sendTo[$r->ID] = $r->ClassName;
+				}
+			}else if ($recipients instanceof MultiValueField) {
 				$recipients = $recipients->getValues();
 				foreach ($recipients as $id) {
 					$sendTo[$id] = 'Member';
-				}
-			} else if ($recipients instanceof DataObjectSet) {
-				foreach ($recipients as $r) {
-					$sendTo[$r->ID] = $r->ClassName;
 				}
 			}
 
