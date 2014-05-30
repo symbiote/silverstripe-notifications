@@ -60,8 +60,6 @@ class NotifyOnThis extends DataObject implements NotifiedOn, TestOnly {
 	 *				The Identifier of the notification being sent
 	 */
 	public function getRecipients($event) {
-		// this should actually be specified on the object directly. If it's hitting here, 
-		// then we need to error so the code writer knows to implement!
 		$member = new Member;
 		$member->Email = 'dummy@nowhere.com';
 		$member->FirstName = "First";

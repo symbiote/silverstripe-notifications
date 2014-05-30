@@ -13,4 +13,6 @@ class NotificationAdmin extends ModelAdmin {
 	public static $url_segment = 'notifications';
 	
 	public static $menu_title = 'Notifications';
+
+	private static $menu_icon = 'notifications/images/notifications-icon.png';
 }
