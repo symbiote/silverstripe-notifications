@@ -30,7 +30,7 @@ class SystemNotification extends DataObject {
 		'Title'				=> 'Varchar(255)',
 		'Description'		=> 'Text',
 		'NotificationText'	=> 'Text',
-		'NotifyOnClass'		=> 'Varchar(32)',
+		'NotifyOnClass'		=> 'Varchar(128)',
 		'CustomTemplate'	=> 'Varchar'
 	);
 	
@@ -114,7 +114,10 @@ class SystemNotification extends DataObject {
 
 		// if we have a context, use that for returning the recipients
 		if ($context && $context instanceof NotifiedOn) {
-			$recipients->merge($context->getRecipients($this->Identifier));
+			$contextRecipients = $context->getRecipients($this->Identifier);
+			if ($contextRecipients) {
+				$recipients->merge($contextRecipients);
+			}
 		}
 
 		if ($context instanceof Member) {
