@@ -1,5 +1,5 @@
 {
-	"name": "silverstripe-australia/silverstripe-notifications",
+	"name": "silverstripe-australia/notifications",
 	"description": "Send CMS editable system notifications from code",
 	"type": "silverstripe-module",
     "keywords": ["silverstripe", "notifications"],
