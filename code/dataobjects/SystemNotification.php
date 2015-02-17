@@ -89,7 +89,7 @@ class SystemNotification extends DataObject {
 		
 		if ($this->NotifyOnClass) {
 			$dummy = singleton($this->NotifyOnClass);
-			if ($dummy instanceof NotifiedOn) {
+			if ($dummy instanceof NotifiedOn || method_exists($dummy, 'getAvailableKeywords')) {
 				if(is_array($dummy->getAvailableKeywords())){
 					foreach ($dummy->getAvailableKeywords() as $keyword => $desc) {
 						$keywords[] = '<strong>'.$keyword.'</strong> - '.$desc;
@@ -113,7 +113,7 @@ class SystemNotification extends DataObject {
 		$recipients = ArrayList::create();
 
 		// if we have a context, use that for returning the recipients
-		if ($context && $context instanceof NotifiedOn) {
+		if ($context && ($context instanceof NotifiedOn) || method_exists($context, 'getRecipients')) {
 			$contextRecipients = $context->getRecipients($this->Identifier);
 			if ($contextRecipients) {
 				$recipients->merge($contextRecipients);
