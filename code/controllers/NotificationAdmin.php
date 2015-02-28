@@ -6,13 +6,13 @@
  * @license http://silverstripe.org/bsd-license/
  */
 class NotificationAdmin extends ModelAdmin {
-	public static $managed_models = array(
+	private static $managed_models = array(
 		'SystemNotification'
 	);
 	
-	public static $url_segment = 'notifications';
+	private static $url_segment = 'notifications';
 	
-	public static $menu_title = 'Notifications';
+	private static $menu_title = 'Notifications';
 
 	private static $menu_icon = 'notifications/images/notifications-icon.png';
 }
