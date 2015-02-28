@@ -25,9 +25,9 @@ class SystemNotification extends DataObject {
 	 */
 	private static $default_template;
 
-	public static $db = array(
+	private static $db = array(
 		'Identifier'		=> 'Varchar',		// used to reference this notification from code
-		'Title'				=> 'Varchar(255)',
+		'Title'			=> 'Varchar(255)',
 		'Description'		=> 'Text',
 		'NotificationText'	=> 'Text',
 		'NotifyOnClass'		=> 'Varchar(128)',
