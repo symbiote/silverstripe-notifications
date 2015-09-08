@@ -21,7 +21,7 @@ class SystemNotification extends DataObject {
 	/**
 	 * If true, notification text can contain html and a wysiwyg editor will be
 	 * used to create the notification text rather than textarea
-	 * @var array
+	 * @var boolean
 	 */
 	private static $html_notifications = false;
 
