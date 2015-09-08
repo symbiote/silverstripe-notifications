@@ -19,6 +19,13 @@ class SystemNotification extends DataObject {
 	private static $global_keywords = array();
 
 	/**
+	 * If true, notification text can contain html and a wysiwyg editor will be
+	 * used to create the notification text rather than textarea
+	 * @var boolean
+	 */
+	private static $html_notifications = false;
+
+	/**
 	 * Name of a template file to render all notifications with
 	 * Note: it's up to the NotificationSender to decide whether or not to use it
 	 * @var string
@@ -30,6 +37,7 @@ class SystemNotification extends DataObject {
 		'Title'			=> 'Varchar(255)',
 		'Description'		=> 'Text',
 		'NotificationText'	=> 'Text',
+		'NotificationHTML'	=> 'HTMLText',
 		'NotifyOnClass'		=> 'Varchar(128)',
 		'CustomTemplate'	=> 'Varchar'
 	);
@@ -67,10 +75,15 @@ class SystemNotification extends DataObject {
 				TextField::create('Description', _t('SystemNotification.DESCRIPTION', 'Description')),
 				DropdownField::create('NotifyOnClass', _t('SystemNotification.NOTIFY_ON_CLASS', $relevantMsg), $types),
 				TextField::create('CustomTemplate', _t('SystemNotification.TEMPLATE', 'Template (Optional)'))->setAttribute('placeholder', $this->config()->get('default_template')),
-				TextareaField::create('NotificationText', _t('SystemNotification.TEXT', 'Text')),
 				LiteralField::create('AvailableKeywords', $availableKeywords)
 			)
 		));
+
+		if($this->config()->html_notifications){
+			$fields->insertBefore(HTMLEditorField::create('NotificationHTML', _t('SystemNotification.TEXT', 'Text')), 'AvailableKeywords');
+		}else{
+			$fields->insertBefore(TextareaField::create('NotificationText', _t('SystemNotification.TEXT', 'Text')), 'AvailableKeywords');
+		}
 
 		return $fields;
 	}
@@ -194,6 +207,15 @@ class SystemNotification extends DataObject {
 	 */
 	public function getTemplate(){
 		return $this->CustomTemplate ? $this->CustomTemplate : $this->config()->get('default_template');
+	}
+
+
+	/**
+	 * Get the notification content, whether that's html or plain text
+	 * @return string
+	 */
+	public function NotificationContent(){
+		return $this->config()->html_notifications ? $this->NotificationHTML : $this->NotificationText;
 	}
 
 }

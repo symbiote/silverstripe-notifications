@@ -37,7 +37,12 @@ class EmailNotificationSender extends Object implements NotificationSender {
 	 */
 	public function sendToUser($notification, $context, $user, $data) {
 		$subject = $notification->format($notification->Title, $context, $user, $data);
-		$message = $notification->format(nl2br($notification->NotificationText), $context, $user, $data);
+
+		if(Config::inst()->get('SystemNotification', 'html_notifications')){
+			$message = $notification->format($notification->NotificationContent(), $context, $user, $data);
+		}else{
+			$message = $notification->format(nl2br($notification->NotificationContent()), $context, $user, $data);
+		}	
 
 		if($template = $notification->getTemplate()){
 			$templateData = $notification->getTemplateData($context, $user, $data);
@@ -64,6 +69,7 @@ class EmailNotificationSender extends Object implements NotificationSender {
 		// send
 		$email = new Email($from, $to, $subject);
 		$email->setBody($body);
+		$this->extend('onBeforeSendToUser', $email);
 		$email->send();
 	}
 }
