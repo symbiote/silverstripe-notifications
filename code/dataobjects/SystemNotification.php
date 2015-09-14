@@ -4,7 +4,7 @@
  * @author marcus@silverstripe.com.au, shea@livesource.co.nz
  * @license http://silverstripe.org/bsd-license/
  */
-class SystemNotification extends DataObject {
+class SystemNotification extends DataObject implements PermissionProvider{
 	
 	/**
 	 * A list of all the notifications that the system manages. 
@@ -216,6 +216,43 @@ class SystemNotification extends DataObject {
 	 */
 	public function NotificationContent(){
 		return $this->config()->html_notifications ? $this->NotificationHTML : $this->NotificationText;
+	}
+
+	public function canView($member = null) {
+		return Permission::check('ADMIN') || Permission::check('SYSTEMNOTIFICATION_VIEW');
+	}
+
+	public function canEdit($member = null) {
+		return Permission::check('ADMIN') || Permission::check('SYSTEMNOTIFICATION_EDIT');
+	}
+
+	public function canDelete($member = null) {
+		return Permission::check('ADMIN') || Permission::check('SYSTEMNOTIFICATION_DELETE');
+	}
+
+	public function canCreate($member = null) {
+		return Permission::check('ADMIN') || Permission::check('SYSTEMNOTIFICATION_CREATE');
+	}
+
+	public function providePermissions() {
+		return array(
+			'SYSTEMNOTIFICATION_VIEW' => array(
+				'name' => 'View System Notifications',
+				'category' => 'Notifications',
+			),
+			'SYSTEMNOTIFICATION_EDIT' => array(
+				'name' => 'Edit a System Notification',
+				'category' => 'Notifications',
+			),
+			'SYSTEMNOTIFICATION_DELETE' => array(
+				'name' => 'Delete a System Notification',
+				'category' => 'Notifications',
+			),
+			'SYSTEMNOTIFICATION_CREATE' => array(
+				'name' => 'Create a System Notification',
+				'category' => 'Notifications'
+			)
+		);
 	}
 
 }
