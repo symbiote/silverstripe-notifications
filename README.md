@@ -38,7 +38,7 @@ class MyDataObject extends DataObject implements NotifiedOn {
 Define the following interface methods on the Object being notified on. 
 
 ```php
-**
+/**
  * Return a list of available keywords in the format 
  * array('keyword' => 'A description') to help users format notification fields
  * @return array
