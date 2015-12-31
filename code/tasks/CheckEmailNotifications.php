@@ -6,14 +6,16 @@
  *
  * @author Marcus Nyeholt <marcus@silverstripe.com.au>
  */
-class CheckEmailNotifications extends BuildTask {
-    public function run($request) {
-		$notifications = singleton('NotificationService')->findNotificationsForDate();
+class CheckEmailNotifications extends BuildTask
+{
+    public function run($request)
+    {
+        $notifications = singleton('NotificationService')->findNotificationsForDate();
 
-		if ($notifications && $notifications->Count()) {
-			foreach ($notifications as $notification) {
-				$notification->send();
-			}
-		}
-	}
+        if ($notifications && $notifications->Count()) {
+            foreach ($notifications as $notification) {
+                $notification->send();
+            }
+        }
+    }
 }
