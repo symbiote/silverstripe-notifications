@@ -84,6 +84,8 @@ class SystemNotification extends DataObject implements PermissionProvider{
 		}else{
 			$fields->insertBefore(TextareaField::create('NotificationText', _t('SystemNotification.TEXT', 'Text')), 'AvailableKeywords');
 		}
+		
+		$this->extend('updateCMSFields', $fields);
 
 		return $fields;
 	}
