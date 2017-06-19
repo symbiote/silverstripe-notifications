@@ -1,5 +1,5 @@
 {
-	"name": "silverstripe-australia/notifications",
+	"name": "symbiote/silverstripe-notifications",
 	"description": "Send CMS editable system notifications from code",
 	"type": "silverstripe-module",
     "keywords": ["silverstripe", "notifications"],
@@ -21,6 +21,9 @@
 	},
 	"minimum-stability": "dev",
     "extra": {
-		"installer-name": "notifications"
+		"installer-name": "notifications",
+		"branch-alias": {
+			"dev-master": "2.0.x-dev"
+		}
     }
 }
