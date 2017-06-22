@@ -12,7 +12,7 @@ Send CMS managed system email notifications from code.
 ## Installation Instructions
 
 ```
-composer require silverstripe-australia/notifications
+composer require symbiote/silverstripe-notifications
 ```
 
 ## Creating System Notifications
