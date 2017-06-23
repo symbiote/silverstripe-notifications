@@ -3,8 +3,8 @@
 Send CMS managed system email notifications from code.
 
 ## Maintainer Contacts
-*  Marcus Nyeholt (<marcus@silverstripe.com.au>)
-*  Shea Dawson (<shea@silverstripe.com.au>)
+*  Marcus Nyeholt (<marcus@symbiote.com.au>)
+*  Shea Dawson (<shea@symbiote.com.au>)
 
 ## Requirements
 * SilverStripe 3.1 +

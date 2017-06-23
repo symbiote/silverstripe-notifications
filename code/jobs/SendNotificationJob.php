@@ -4,7 +4,7 @@
 /**
  * A queued job for sending notifications
  *
- * @author Marcus Nyeholt <marcus@silverstripe.com.au>
+ * @author Marcus Nyeholt <marcus@symbiote.com.au>
  */
 class SendNotificationJob extends AbstractQueuedJob implements QueuedJob {
 

@@ -2,7 +2,7 @@
 /* All code covered by the BSD license located at http://silverstripe.org/bsd-license/ */
 
 /**
- * @author Marcus Nyeholt <marcus@silverstripe.com.au>
+ * @author Marcus Nyeholt <marcus@symbiote.com.au>
  */
 class NotificationsTest extends SapphireTest {
 

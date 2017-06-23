@@ -1,7 +1,7 @@
 <?php
 /**
  * NotificationSender
- * @author marcus@silverstripe.com.au, shea@livesource.co.nz
+ * @author marcus@symbiote.com.au, shea@livesource.co.nz
  * @license http://silverstripe.org/bsd-license/
  */
 interface NotificationSender {

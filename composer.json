@@ -7,11 +7,11 @@
     "authors": [
     {
         "shea": "Shea Dawson",
-        "email": "shea@silverstripe.com.au"
+        "email": "shea@symbiote.com.au"
     },
     {
         "name": "Marcus Nyeholt",
-        "email": "marcus@silverstripe.com.au"
+        "email": "marcus@symbiote.com.au"
     }
     ],
 	"require": {

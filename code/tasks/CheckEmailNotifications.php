@@ -4,7 +4,7 @@
 /**
  * A task that checks to see if there's any email notifications that need sending
  *
- * @author Marcus Nyeholt <marcus@silverstripe.com.au>
+ * @author Marcus Nyeholt <marcus@symbiote.com.au>
  */
 class CheckEmailNotifications extends BuildTask {
     public function run($request) {
