@@ -99,7 +99,7 @@ class SystemNotification extends DataObject implements PermissionProvider{
 		$keywords = array();
 		
 		foreach ($this->config()->get('global_keywords') as $k => $v) {
-			$keywords[] = '<strong>'.$k.'</strong>';
+			$keywords[] = '<strong>'.$k.'</strong> - '.$v;
 		}
 		
 		if ($this->NotifyOnClass) {
