@@ -1,32 +1,52 @@
 {
-	"name": "symbiote/silverstripe-notifications",
-	"description": "Send CMS editable system notifications from code",
-	"type": "silverstripe-module",
-    "keywords": ["silverstripe", "notifications"],
-	"license": "BSD-3-Clause",
-    "authors": [
+  "name": "symbiote/silverstripe-notifications",
+  "description": "Send CMS editable system notifications from code",
+  "type": "silverstripe-vendormodule",
+  "keywords": [
+    "silverstripe",
+    "notifications"
+  ],
+  "license": "BSD-3-Clause",
+  "authors": [
     {
-        "shea": "Shea Dawson",
-        "email": "shea@symbiote.com.au"
+      "name": "Shea Dawson",
+      "email": "shea@symbiote.com.au"
     },
     {
-        "name": "Marcus Nyeholt",
-        "email": "marcus@symbiote.com.au"
+      "name": "Marcus Nyeholt",
+      "email": "marcus@symbiote.com.au"
     }
+  ],
+  "require": {
+    "php": ">=5.6.0",
+    "silverstripe/cms": "^4.0",
+    "silverstripe/framework": "^4.0",
+    "symbiote/silverstripe-multivaluefield": "^5.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Symbiote\\Notifications\\": "src/",
+      "Symbiote\\Notifications\\Tests\\": "tests/"
+    }
+  },
+  "prefer-stable": true,
+  "minimum-stability": "dev",
+  "extra": {
+    "installer-name": "notifications",
+    "expose": [
+      "images"
     ],
-	"require": {
-		"php": ">=5.3.2",
-		"silverstripe/cms": "~3.1",
-		"silverstripe/framework": "~3.1"
-	},
-	"minimum-stability": "dev",
-    "extra": {
-		"installer-name": "notifications",
-		"branch-alias": {
-			"dev-master": "2.0.x-dev"
-		}
-    },
-	"replace": {
-		"silverstripe-australia/notifications": "self.version"
-	}
+    "branch-alias": {
+      "dev-master": "4.0.x-dev"
+    }
+  },
+  "suggest": {
+    "symbiote/silverstripe-queuedjobs": "Use the SendNotificationJob to queue and send notifications."
+  },
+  "replace": {
+    "silverstripe-australia/notifications": "self.version"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^5"
+  }
 }
