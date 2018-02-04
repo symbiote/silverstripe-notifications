@@ -261,7 +261,7 @@ class SystemNotification extends DataObject implements PermissionProvider
      * @param  array      $extraData
      * @return ArrayData
      */
-    public function getTemplateData(NotifiedOn $context, $user = null, $extraData = [])
+    public function getTemplateData($context, $user = null, $extraData = [])
     {
         // useful global data
         $data = [
@@ -274,7 +274,7 @@ class SystemNotification extends DataObject implements PermissionProvider
         $data[end($clsPath)] = $context;
 
         // data as defined by the context object
-        $contextData = $context->getNotificationTemplateData();
+        $contextData = method_exists($context, 'getNotificationTemplateData') ? $context->getNotificationTemplateData() : null;
         if (is_array($contextData)) {
             $data = array_merge($data, $contextData);
         }
