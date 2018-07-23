@@ -40,6 +40,13 @@ class SystemNotification extends DataObject implements PermissionProvider
     private static $table_name = 'SystemNotification';
 
     /**
+     * The list of types to allow users to select for being notified on, 
+     * where the types don't implement NotifiedOn directly. 
+     * @var array
+     */
+    private static $notify_on = [];
+
+    /**
      * A list of all the notifications that the system manages.
      * @var array
      */
@@ -49,7 +56,10 @@ class SystemNotification extends DataObject implements PermissionProvider
      * A list of globally available keywords for all NotifiedOn implementors
      * @var array
      */
-    private static $global_keywords = [];
+    private static $global_keywords = [
+        'Context' => 'The item associated with the notification',
+        'Member' => 'The user who triggered the notification',
+    ];
 
     /**
      * If true, notification text can contain html and a wysiwyg editor will be
@@ -82,12 +92,15 @@ class SystemNotification extends DataObject implements PermissionProvider
     {
         // Get NotifiedOn implementors
         $types = ClassInfo::implementorsOf(NotifiedOn::class);
+        $configTypes = self::config()->notify_on;
+
+        $types = array_merge($types, $configTypes);
+
         $types = array_combine($types, $types);
         unset($types['NotifyOnThis']);
         if (!$types) {
             $types = [];
         }
-        array_unshift($types, '');
 
         // Available keywords
         $keywords = $this->getKeywords();
@@ -132,7 +145,7 @@ class SystemNotification extends DataObject implements PermissionProvider
                         'NotifyOnClass',
                         _t('SystemNotification.NOTIFY_ON_CLASS', $relevantMsg),
                         $types
-                    ),
+                    )->setEmptyString(''),
                     TextField::create(
                         'CustomTemplate',
                         _t(
@@ -180,14 +193,16 @@ class SystemNotification extends DataObject implements PermissionProvider
         $keywords = [];
 
         foreach ($this->config()->get('global_keywords') as $k => $v) {
-            $keywords[] = '<strong>'.$k.'</strong>';
+            $keywords[] = '<strong>'.$k.'</strong> ' . $v;
         }
 
         if ($this->NotifyOnClass) {
             $dummy = singleton($this->NotifyOnClass);
-            if ($dummy instanceof NotifiedOn || method_exists($dummy, 'getAvailableKeywords')) {
-                if (is_array($dummy->getAvailableKeywords())) {
-                    foreach ($dummy->getAvailableKeywords() as $keyword => $desc) {
+            if ($dummy instanceof NotifiedOn || $dummy->hasMethod('getAvailableKeywords')) {
+                $myKeywords = $dummy->getAvailableKeywords();
+                
+                if (is_array($myKeywords)) {
+                    foreach ($myKeywords as $keyword => $desc) {
                         $keywords[] = '<strong>'.$keyword.'</strong> - '.$desc;
                     }
                 }
@@ -208,11 +223,8 @@ class SystemNotification extends DataObject implements PermissionProvider
         $recipients = ArrayList::create();
 
         // if we have a context, use that for returning the recipients
-        if ($context && ($context instanceof NotifiedOn) || method_exists(
-            $context,
-            'getRecipients'
-        )
-        ) {
+        if ($context && ($context instanceof NotifiedOn || $context->hasMethod('getRecipients'))) 
+        {
             $contextRecipients = $context->getRecipients($this->Identifier);
             if ($contextRecipients) {
                 $recipients->merge($contextRecipients);
@@ -272,6 +284,7 @@ class SystemNotification extends DataObject implements PermissionProvider
         // the context object, keyed by it's class name
         $clsPath = explode('\\', get_class($context));
         $data[end($clsPath)] = $context;
+        $data['Context'] = $context;
 
         // data as defined by the context object
         $contextData = method_exists($context, 'getNotificationTemplateData') ? $context->getNotificationTemplateData() : null;

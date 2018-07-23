@@ -25,6 +25,7 @@ class NotificationService
      */
     private static $default_senders = [
         'email' => EmailNotificationSender::class,
+        'internal' => InternalNotificationSender::class,
     ];
 
     /**
@@ -33,6 +34,7 @@ class NotificationService
      */
     private static $default_channels = [
         'email',
+        'internal',
     ];
 
     /**
@@ -141,7 +143,8 @@ class NotificationService
         // okay, lets find any notification set up with this identifier
         if ($notifications = SystemNotification::get()->filter('Identifier', $identifier)) {
             foreach ($notifications as $notification) {
-                if ($notification->NotifyOnClass && $notification->NotifyOnClass != get_class($context)) {
+                $subclasses = ClassInfo::subclassesFor($notification->NotifyOnClass);
+                if ($notification->NotifyOnClass && !isset($subclasses[strtolower(get_class($context))])) {
                     continue;
                 } else {
                     $this->sendNotification($notification, $context, $data, $channel);

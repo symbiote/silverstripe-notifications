@@ -104,10 +104,18 @@ class EmailNotificationSender implements NotificationSender
         $this->logger->notice(sprintf("Sending %s to %s", $subject, $to));
 
         // send
-        $email = new Email($from, $to, $subject);
-        $email->setBody($body);
-        $this->extend('onBeforeSendToUser', $email);
-        $email->send();
+        try {
+            $email = new Email($from, $to, $subject);
+            $email->setBody($body);
+            $this->extend('onBeforeSendToUser', $email);
+            $email->send();
+        } catch (\Swift_SwiftException $e) {
+            if ($this->logger) {
+                if ($to !== 'admin') {
+                    $this->logger->warning("Failed sending email to $to");    
+                }
+            }
+        }
     }
 
     /**
