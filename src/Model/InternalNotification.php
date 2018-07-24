@@ -8,6 +8,8 @@ use SilverStripe\Security\Security;
 
 
 class InternalNotification extends DataObject {
+    private static $table_name = 'InternalNotification';
+    
     private static $db = [
         'Title' => 'Varchar(255)',
         'Message'   => 'Text',
