@@ -100,9 +100,6 @@ class EmailNotificationSender implements NotificationSender
             $to = $user->getEmailAddress();
         }
 
-        // log
-        $this->logger->notice(sprintf("Sending %s to %s", $subject, $to));
-
         // send
         try {
             $email = new Email($from, $to, $subject);
