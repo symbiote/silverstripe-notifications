@@ -78,6 +78,11 @@ class NotificationService
         return $this;
     }
 
+    public function getChannels()
+    {
+        return $this->channels;
+    }
+
     /**
      * Set the list of channels this notification service should use when sending notifications
      * @param array $channels The channels to send to
@@ -147,7 +152,13 @@ class NotificationService
                 if ($notification->NotifyOnClass && !isset($subclasses[strtolower(get_class($context))])) {
                     continue;
                 } else {
-                    $this->sendNotification($notification, $context, $data, $channel);
+                    // figure out the channels to send the notification on
+                    $channels = $channel ? [$channel] : [];
+                    if ($notification->Channels) {
+                        $channels = json_decode($notification->Channels);
+                    }
+
+                    $this->sendNotification($notification, $context, $data, $channels);
                 }
             }
         }
@@ -158,14 +169,14 @@ class NotificationService
      * @param SystemNotification $notification The configured notification object
      * @param DataObject         $context      The context of the notification to send
      * @param array              $extraData    Any extra data to add into the notification text
-     * @param string             $channel      A specific channel to send through. If not set, just
+     * @param string             $channels     The specific channels to send through. If not set, just
      *                                         sends to the default configured
      */
     public function sendNotification(
         SystemNotification $notification,
         DataObject $context,
         $extraData = [],
-        $channel = null
+        $channels = null
     ) {
         // check to make sure that there are users to send it to. If not, we don't bother with it at all
         $recipients = $notification->getRecipients($context);
@@ -184,7 +195,10 @@ class NotificationService
                 )
             );
         } else {
-            $channels = $channel ? [$channel] : $this->channels;
+            if (!is_array($channels)) {
+                $channels = [$channels];
+            }
+            $channels = count($channels) ? $channels : $this->channels;
             foreach ($channels as $channel) {
                 if ($sender = $this->getSender($channel)) {
                     $sender->sendNotification($notification, $context, $extraData);

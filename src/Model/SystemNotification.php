@@ -22,6 +22,9 @@ use SilverStripe\SiteConfig\SiteConfig;
 use SilverStripe\View\ArrayData;
 use SilverStripe\View\SSViewer;
 use SilverStripe\View\SSViewer_FromString;
+use SilverStripe\Core\Injector\Injector;
+use Symbiote\Notifications\Service\NotificationService;
+use SilverStripe\Forms\ListboxField;
 
 /**
  * SystemNotification
@@ -82,6 +85,7 @@ class SystemNotification extends DataObject implements PermissionProvider
         'NotificationText' => 'Text',
         'NotificationHTML' => 'HTMLText',
         'NotifyOnClass' => 'Varchar(128)',
+        'Channels'           => 'Varchar(64)',
         'CustomTemplate' => 'Varchar',
     ];
 
@@ -160,6 +164,14 @@ class SystemNotification extends DataObject implements PermissionProvider
                 )
             )
         );
+
+        $channels = Injector::inst()->get(NotificationService::class)->getChannels();
+        if ($channels && count($channels)) {
+            $sendChannels = array_combine($channels, array_map('ucfirst', $channels));
+            $list = ListboxField::create('Channels', 'Send via channels', $sendChannels);
+            $fields->insertBefore('AvailableKeywords', $list);
+            $list->setRightTitle('Leave empty to send to all channels');
+        } 
 
         if ($this->config()->html_notifications) {
             $fields->insertBefore(
