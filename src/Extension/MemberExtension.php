@@ -10,12 +10,14 @@ use Symbiote\Notifications\Model\InternalNotification;
 
 class MemberExtension extends Extension
 {
-    public function getNotifications($read = false, $limit = 10, $offset = 0)
+    public function getNotifications($limit = 10, $offset = 0, $filter = [])
     {
+        $filter = array_merge(
+            $filter,
+            ['ToID' => $this->owner->ID]
+        );
         return InternalNotification::get()
-            ->filter([
-                'ToID' => $this->owner->ID,
-                'IsRead' => $read
-            ])->limit($limit, $offset);
+            ->filter($filter)
+            ->limit($limit, $offset);
     }
 }
