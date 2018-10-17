@@ -12,6 +12,7 @@ class NotifyService
         return array(
             'list' => 'GET',
             'read' => 'POST',
+            'see' => 'POST'
         );
     }
 
@@ -32,8 +33,8 @@ class NotifyService
     }
 
     /**
-     * Mark a Notifaction as read, accepts a notification ID and returns a
-     * boolean for sucess or failure.
+     * Mark a Notification as read, accepts a notification ID and returns a
+     * boolean for success or failure.
      *
      * @param string|int $ID The ID of an InternalNotification for the current
      * logged in Member
@@ -47,15 +48,47 @@ class NotifyService
         }
 
         if ($ID) {
-            $notifaction = InternalNotification::get()
+            $notification = InternalNotification::get()
                 ->filter([
                     'ID' => $ID,
                     'ToID' => $member->ID,
                     'IsRead' => false
                 ])->first();
-            if ($notifaction) {
-                $notifaction->IsRead = true;
-                $notifaction->write();
+            if ($notification) {
+                $notification->IsRead = true;
+                $notification->write();
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Mark a Notification as seen, accepts a notification ID and returns a
+     * boolean for success or failure.
+     *
+     * @param string|int $ID The ID of an InternalNotification for the current
+     * logged in Member
+     * @return boolean true when marked seen otherwise false
+     */
+    public function see($ID)
+    {
+        $member = Member::currentUser();
+        if (!$member) {
+            return false;
+        }
+
+        if ($ID) {
+            $notification = InternalNotification::get()
+                ->filter([
+                    'ID' => $ID,
+                    'ToID' => $member->ID
+                ])->first();
+            if ($notification) {
+                if (!$notification->IsSeen) {
+                    $notification->IsSeen = true;
+                    $notification->write();
+                }
                 return true;
             }
         }
