@@ -74,6 +74,11 @@ class InternalNotificationSender implements NotificationSender
             'ToID'      => $user->ID,
             'FromID'    => Member::currentUserID(),
             'SentOn'    => date('Y-m-d H:i:s'),
+            'Context' => [
+                'ClassName' => get_class($context),
+                'ID' => $context->ID,
+                'Link' => $context->Link()
+            ]
         ]);
 
         $notice->write();
