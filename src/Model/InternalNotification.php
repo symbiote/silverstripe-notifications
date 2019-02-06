@@ -5,6 +5,7 @@ namespace Symbiote\Notifications\Model;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\Security;
+use Symbiote\MultiValueField\ORM\FieldType\MultiValueField;
 
 
 class InternalNotification extends DataObject {
@@ -15,6 +16,8 @@ class InternalNotification extends DataObject {
         'Message'   => 'Text',
         'SentOn' => 'Datetime',
         'IsRead'    => 'Boolean',
+        'IsSeen'    => 'Boolean',
+        'Context' => MultiValueField::class,
     ];
 
     private static $has_one = [
@@ -43,4 +46,5 @@ class InternalNotification extends DataObject {
         }
         return $member && $this->ToID == $member->ID;
     }
+
 }
