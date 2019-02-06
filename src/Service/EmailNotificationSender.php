@@ -100,6 +100,9 @@ class EmailNotificationSender implements NotificationSender
             $to = $user->getEmailAddress();
         }
 
+        if (!$from || !$to) {
+            return;
+        }
         // send
         try {
             $email = new Email($from, $to, $subject);
