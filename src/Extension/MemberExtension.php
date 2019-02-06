@@ -36,6 +36,6 @@ class MemberExtension extends Extension
             return $this->owner->Username;
         }
 
-        return $this->owner->FirstName . ' ' . $this->owner->Surname;
+        return $this->owner->getTitle();
     }
 }
