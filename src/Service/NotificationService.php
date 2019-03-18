@@ -186,7 +186,7 @@ class NotificationService
 
         // if we've got queues and a large number of recipients, lets send via a queued job instead
         if ($this->config()->get('use_queues') && count($recipients) > 5) {
-            $extraData['SEND_CHANNEL'] = $channel;
+            $extraData['SEND_CHANNELS'] = $channels;
             singleton(QueuedJobService::class)->queueJob(
                 new SendNotificationJob(
                     $notification,
@@ -220,8 +220,15 @@ class NotificationService
         $user,
         $extraData = []
     ) {
-        $channel = $extraData && isset($extraData['SEND_CHANNEL']) ? $extraData['SEND_CHANNEL'] : null;
-        $channels = $channel ? [$channel] : $this->channels;
+        $channels = $this->channels;
+        if ($extraData && isset($extraData['SEND_CHANNELS'])) {
+            $channels = $extraData['SEND_CHANNELS'];
+            unset($extraData['SEND_CHANNELS']);
+        }
+
+        if (!is_array($channels)) {
+            $channels = [$channels];
+        }
 
         foreach ($channels as $channel) {
             if ($sender = $this->getSender($channel)) {

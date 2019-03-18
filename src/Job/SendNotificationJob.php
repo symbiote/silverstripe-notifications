@@ -2,6 +2,7 @@
 
 namespace Symbiote\Notifications\Job;
 
+use SilverStripe\ORM\ArrayList;
 use SilverStripe\ORM\DataList;
 use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Member;
@@ -99,7 +100,7 @@ if (class_exists('Symbiote\QueuedJobs\Services\AbstractQueuedJob')) {
             $recipients = $notification->getRecipients($this->getContext());
             $sendTo = [];
             if ($recipients) {
-                if (is_array($recipients) || $recipients instanceof DataList) {
+                if (is_array($recipients) || $recipients instanceof DataList || $recipients instanceof ArrayList) {
                     foreach ($recipients as $r) {
                         $sendTo[$r->ID] = $r->ClassName;
                     }
