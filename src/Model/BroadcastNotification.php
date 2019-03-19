@@ -42,7 +42,7 @@ class BroadcastNotification extends DataObject implements NotifiedOn
         $fields = parent::getCMSFields();
         
         if ($this->ID) {
-            $fields->dataFieldByName('SendNow')->setRightTitle('If selected, this notification will be broadcast to all users');
+            $fields->dataFieldByName('SendNow')->setRightTitle('If selected, this notification will be broadcast to all users in groups selected below');
 
             $fields->removeByName('Groups');
 
