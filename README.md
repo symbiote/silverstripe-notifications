@@ -15,7 +15,31 @@ Send CMS managed system email notifications from code.
 composer require symbiote/silverstripe-notifications
 ```
 
+## Sending a notification
+
+The module comes with a default BroadcastNotification object that can be used to send a notification to multiple 
+people at once. First, create the SystemNotification (which defines how the notification will be sent)
+
+> Notifications => Add System Notification
+
+* Identifier: BROADCAST
+* Title: (your own) 
+* Relevant For: BroadcastNotification
+* Send via channels: Internal
+* Text: (Your own; use $Context.Content to output the broadcast content)
+
+> Notifications => Add Broadcast Notification
+
+* Title: (your own) 
+* Content: (your own)
+* Click Create
+* Groups: choose which groups to receive the notification
+* Send Now: Click when ready for the notification to send.
+
 ## Creating System Notifications
+
+Creating custom notifications requires a few pieces of code to put things together. Use the 
+BroadcastNotification as an example, with the key points identified below
 
 ### 1)
 In your _config yml file, add an identifier for each notification you require. This allows you to lookup Notification objects in the database from your code. 
@@ -85,7 +109,10 @@ Send the notification from your code, where $contextObject is an instance of the
 use Symbiote\Notifications\Service\NotificationService;
 
 singleton(NotificationService::class)->notify('NOTIFICATION_IDENTIFIER', $contextObject);
+
 ```
+
+
 
 ## Templates
 

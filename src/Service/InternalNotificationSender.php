@@ -77,7 +77,7 @@ class InternalNotificationSender implements NotificationSender
             'Context' => [
                 'ClassName' => get_class($context),
                 'ID' => $context->ID,
-                'Link' => $context->Link()
+                'Link' => $context->hasMethod('Link') ? $context->Link() : ''
             ]
         ]);
 
