@@ -53,7 +53,9 @@ class SystemNotification extends DataObject implements PermissionProvider
      * A list of all the notifications that the system manages.
      * @var array
      */
-    private static $identifiers = [];
+    private static $identifiers = [
+        'BROADCAST'
+    ];
 
     /**
      * A list of globally available keywords for all NotifiedOn implementors

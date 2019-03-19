@@ -5,6 +5,7 @@ namespace Symbiote\Notifications\Controller;
 use SilverStripe\Admin\ModelAdmin;
 use Symbiote\Notifications\Model\SystemNotification;
 use Symbiote\Notifications\Model\InternalNotification;
+use Symbiote\Notifications\Model\BroadcastNotification;
 
 /**
  * @author  marcus@symbiote.com.au
@@ -15,6 +16,7 @@ class NotificationAdmin extends ModelAdmin
 {
     private static $managed_models = [
         SystemNotification::class,
+        BroadcastNotification::class,
         InternalNotification::class,
     ];
 
