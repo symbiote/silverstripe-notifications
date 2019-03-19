@@ -19,6 +19,7 @@ class BroadcastNotification extends DataObject implements NotifiedOn
         'Title' => 'Varchar(255)',
         'Content' => 'Text',
         'SendNow' => 'Boolean',
+        'IsPublic'  => 'Boolean',
     ];
 
     private static $many_many = [
@@ -40,6 +41,8 @@ class BroadcastNotification extends DataObject implements NotifiedOn
     public function getCMSFields()
     {
         $fields = parent::getCMSFields();
+
+        $fields->dataFieldByName('IsPublic')->setRightTitle('Indicate whether this can be displayed to public users');
         
         if ($this->ID) {
             $fields->dataFieldByName('SendNow')->setRightTitle('If selected, this notification will be broadcast to all users in groups selected below');
