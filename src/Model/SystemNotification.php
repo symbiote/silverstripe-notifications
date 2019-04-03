@@ -210,7 +210,7 @@ class SystemNotification extends DataObject implements PermissionProvider
             $keywords[] = '<strong>'.$k.'</strong> ' . $v;
         }
 
-        if ($this->NotifyOnClass) {
+        if ($this->NotifyOnClass && class_exists($this->NotifyOnClass)) {
             $dummy = singleton($this->NotifyOnClass);
             if ($dummy instanceof NotifiedOn || $dummy->hasMethod('getAvailableKeywords')) {
                 $myKeywords = $dummy->getAvailableKeywords();
