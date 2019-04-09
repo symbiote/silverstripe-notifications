@@ -8,8 +8,7 @@ use SilverStripe\Security\Member;
 use SilverStripe\Core\Injector\Injector;
 use Symbiote\Notifications\Service\NotificationService;
 use SilverStripe\Forms\ListboxField;
-
-
+use Symbiote\MultiValueField\Fields\KeyValueField;
 
 class BroadcastNotification extends DataObject implements NotifiedOn
 {
@@ -18,9 +17,9 @@ class BroadcastNotification extends DataObject implements NotifiedOn
     private static $db = [
         'Title' => 'Varchar(255)',
         'Content' => 'Text',
-        'Link'  => 'Varchar(255)',
         'SendNow' => 'Boolean',
         'IsPublic'  => 'Boolean',
+        'Context' => 'MultiValueField'
     ];
 
     private static $many_many = [
@@ -44,7 +43,6 @@ class BroadcastNotification extends DataObject implements NotifiedOn
         $fields = parent::getCMSFields();
 
         $fields->dataFieldByName('IsPublic')->setRightTitle('Indicate whether this can be displayed to public users');
-        $fields->dataFieldByName('Link')->setRightTitle('An optional link to attach to this message');
 
         if ($this->ID) {
             $fields->dataFieldByName('SendNow')->setRightTitle('If selected, this notification will be broadcast to all users in groups selected below');
@@ -56,17 +54,17 @@ class BroadcastNotification extends DataObject implements NotifiedOn
             $fields->removeByName('SendNow');
         }
 
+        $context = KeyValueField::create('Context')->setRightTitle('Add a Link and Title field here to provide context for this message');
 
+        $fields->replaceField('Context', $context);
 
         return $fields;
     }
 
     public function getAvailableKeywords()
     {
-        return [
-            'Content',
-            'Link'
-        ];
+        $fields = $this->getNotificationTemplateData();
+        return array_keys($fields);
     }
 
     /**
@@ -76,10 +74,12 @@ class BroadcastNotification extends DataObject implements NotifiedOn
      */
     public function getNotificationTemplateData()
     {
-        return [
-            'Content' => $this->Content,
-            'Link' => $this->Link,
-        ];
+        $fields = $this->Context->getValues();
+        if (!is_array($fields)) {
+            $fields = [];
+        }
+        $fields['Content'] = $this->Content;
+        return $fields;
     }
 
     /**
@@ -96,5 +96,11 @@ class BroadcastNotification extends DataObject implements NotifiedOn
             return $members;
         }
         return [];
+    }
+
+    public function Link()
+    {
+        $context = $this->Context->getValues();
+        return isset($context['Link']) ? $context['Link'] : null;
     }
 }
