@@ -6,7 +6,7 @@ use SilverStripe\ORM\DataObject;
 use SilverStripe\Security\Member;
 use SilverStripe\Security\Security;
 use Symbiote\MultiValueField\ORM\FieldType\MultiValueField;
-
+use Symbiote\MultiValueField\Fields\KeyValueField;
 
 class InternalNotification extends DataObject {
     private static $table_name = 'InternalNotification';
@@ -30,6 +30,14 @@ class InternalNotification extends DataObject {
     ];
 
     private static $default_sort = 'ID DESC';
+
+    public function getCMSFields()
+    {
+        $fields = parent::getCMSFields();
+
+        $fields->replaceField('Context', KeyValueField::create('Context'));
+        return $fields;
+    }
 
     public function canView($member = null) {
         $member = $member ?: Security::getCurrentUser();
