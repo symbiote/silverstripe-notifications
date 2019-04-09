@@ -18,6 +18,7 @@ class BroadcastNotification extends DataObject implements NotifiedOn
     private static $db = [
         'Title' => 'Varchar(255)',
         'Content' => 'Text',
+        'Link'  => 'Varchar(255)',
         'SendNow' => 'Boolean',
         'IsPublic'  => 'Boolean',
     ];
@@ -43,19 +44,19 @@ class BroadcastNotification extends DataObject implements NotifiedOn
         $fields = parent::getCMSFields();
 
         $fields->dataFieldByName('IsPublic')->setRightTitle('Indicate whether this can be displayed to public users');
-        
+        $fields->dataFieldByName('Link')->setRightTitle('An optional link to attach to this message');
+
         if ($this->ID) {
             $fields->dataFieldByName('SendNow')->setRightTitle('If selected, this notification will be broadcast to all users in groups selected below');
 
             $fields->removeByName('Groups');
 
             $fields->addFieldToTab('Root.Main', ListboxField::create('Groups', 'Groups', Group::get()));
-        
         } else {
             $fields->removeByName('SendNow');
         }
 
-        
+
 
         return $fields;
     }
@@ -63,7 +64,8 @@ class BroadcastNotification extends DataObject implements NotifiedOn
     public function getAvailableKeywords()
     {
         return [
-            'Content'
+            'Content',
+            'Link'
         ];
     }
 
@@ -75,7 +77,8 @@ class BroadcastNotification extends DataObject implements NotifiedOn
     public function getNotificationTemplateData()
     {
         return [
-            'Content' => $this->Content
+            'Content' => $this->Content,
+            'Link' => $this->Link,
         ];
     }
 
