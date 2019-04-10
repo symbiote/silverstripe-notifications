@@ -148,7 +148,7 @@ class NotificationService
         // okay, lets find any notification set up with this identifier
         if ($notifications = SystemNotification::get()->filter('Identifier', $identifier)) {
             foreach ($notifications as $notification) {
-                $subclasses = ClassInfo::subclassesFor($notification->NotifyOnClass);
+                $subclasses = $notification->NotifyOnClass ? ClassInfo::subclassesFor($notification->NotifyOnClass) : [];
                 if ($notification->NotifyOnClass && !isset($subclasses[strtolower(get_class($context))])) {
                     continue;
                 } else {
