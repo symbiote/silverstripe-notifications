@@ -41,6 +41,10 @@ class InternalNotificationSender implements NotificationSender
      */
     public function sendToUser($notification, $context, $user, $data)
     {
+        if (!($user instanceof Member)) {
+            // don't send to non-member user object types
+            return;
+        }
         $subject = $notification->format($notification->Title, $context, $user, $data);
 
         $content = $notification->NotificationContent();
