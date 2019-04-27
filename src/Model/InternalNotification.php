@@ -7,6 +7,7 @@ use SilverStripe\Security\Member;
 use SilverStripe\Security\Security;
 use Symbiote\MultiValueField\ORM\FieldType\MultiValueField;
 use Symbiote\MultiValueField\Fields\KeyValueField;
+use SilverStripe\Security\Permission;
 
 class InternalNotification extends DataObject {
     private static $table_name = 'InternalNotification';
@@ -44,7 +45,10 @@ class InternalNotification extends DataObject {
         if (!$member) {
             return false;
         }
-        return $member && $this->ToID == $member->ID || $this->FromID == $member->ID;
+        if (Permission::check('ADMIN')) {
+            return true;
+        }
+        return $member && (!$this->ID || $this->ToID == $member->ID || $this->FromID == $member->ID);
     }
 
     public function canEdit($member = null) {
@@ -52,7 +56,10 @@ class InternalNotification extends DataObject {
         if (!$member) {
             return false;
         }
-        return $member && $this->ToID == $member->ID;
+        if (Permission::check('ADMIN')) {
+            return true;
+        }
+        return $member && (!$this->ID || $this->ToID == $member->ID);
     }
 
 }
