@@ -148,18 +148,20 @@ class NotificationService
         // okay, lets find any notification set up with this identifier
         if ($notifications = SystemNotification::get()->filter('Identifier', $identifier)) {
             foreach ($notifications as $notification) {
-                $subclasses = $notification->NotifyOnClass ? ClassInfo::subclassesFor($notification->NotifyOnClass) : [];
-                if ($notification->NotifyOnClass && !isset($subclasses[strtolower(get_class($context))])) {
-                    continue;
-                } else {
-                    // figure out the channels to send the notification on
-                    $channels = $channel ? [$channel] : [];
-                    if ($notification->Channels) {
-                        $channels = json_decode($notification->Channels);
+                if ($notification->NotifyOnClass) {
+                    $subclasses = ClassInfo::subclassesFor($notification->NotifyOnClass);
+                    if (!isset($subclasses[strtolower(get_class($context))])) {
+                        continue;
                     }
-
-                    $this->sendNotification($notification, $context, $data, $channels);
                 }
+
+                // figure out the channels to send the notification on
+                $channels = $channel ? [$channel] : [];
+                if ($notification->Channels) {
+                    $channels = json_decode($notification->Channels);
+                }
+
+                $this->sendNotification($notification, $context, $data, $channels);
             }
         }
     }
