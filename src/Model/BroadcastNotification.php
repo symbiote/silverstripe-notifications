@@ -64,7 +64,8 @@ class BroadcastNotification extends DataObject implements NotifiedOn
     public function getAvailableKeywords()
     {
         $fields = $this->getNotificationTemplateData();
-        return array_keys($fields);
+        $names = array_keys($fields);
+        return array_combine($names, $names);
     }
 
     /**
