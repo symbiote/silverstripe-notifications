@@ -11,7 +11,7 @@ use SilverStripe\Security\Permission;
 
 class InternalNotification extends DataObject {
     private static $table_name = 'InternalNotification';
-    
+
     private static $db = [
         'Title' => 'Varchar(255)',
         'Message'   => 'Text',
@@ -24,10 +24,16 @@ class InternalNotification extends DataObject {
     private static $has_one = [
         'To'        => Member::class,
         'From'      => Member::class,
+        'SourceObject' => DataObject::class,
+        'SourceNotification' => SystemNotification::class,
     ];
 
     private static $summary_fields = [
-        'Title', 'To.Name', 'SentOn'
+        'Title' => 'Title',
+        'To.Name' => 'To',
+        'SentOn' => 'Sent on',
+        'IsSeen.Nice' => 'Seen?',
+        'IsRead.Nice' => 'Read?'
     ];
 
     private static $default_sort = 'ID DESC';
