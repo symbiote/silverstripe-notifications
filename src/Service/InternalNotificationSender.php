@@ -2,6 +2,7 @@
 
 namespace Symbiote\Notifications\Service;
 
+use Exception;
 use Symbiote\Notifications\Model\NotificationSender;
 use Symbiote\Notifications\Model\SystemNotification;
 use Symbiote\Notifications\Model\InternalNotification;
@@ -78,6 +79,8 @@ class InternalNotificationSender implements NotificationSender
             'ToID'      => $user->ID,
             'FromID'    => Member::currentUserID(),
             'SentOn'    => date('Y-m-d H:i:s'),
+            'SourceObjectID' => $context->ID,
+            'SourceNotificationID' => $notification->ID,
             'Context' => [
                 'ClassName' => get_class($context),
                 'ID' => $context->ID,
