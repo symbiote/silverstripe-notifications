@@ -73,6 +73,12 @@ class InternalNotificationSender implements NotificationSender
             $body = $message;
         }
 
+        $context = array_merge([
+            'ClassName' => get_class($context),
+            'ID' => $context->ID,
+            'Link' => $context->hasMethod('Link') ? $context->Link() : ''
+        ], $data);
+
         $notice = InternalNotification::create([
             'Title' => $subject,
             'Message' => $body,
@@ -81,11 +87,7 @@ class InternalNotificationSender implements NotificationSender
             'SentOn'    => date('Y-m-d H:i:s'),
             'SourceObjectID' => $context->ID,
             'SourceNotificationID' => $notification->ID,
-            'Context' => [
-                'ClassName' => get_class($context),
-                'ID' => $context->ID,
-                'Link' => $context->hasMethod('Link') ? $context->Link() : ''
-            ]
+            'Context' => $context
         ]);
 
         $notice->write();
