@@ -8,7 +8,9 @@ use SilverStripe\Security\Member;
 use SilverStripe\Core\Injector\Injector;
 use Symbiote\Notifications\Service\NotificationService;
 use SilverStripe\Forms\ListboxField;
+use SilverStripe\Security\Permission;
 use Symbiote\MultiValueField\Fields\KeyValueField;
+use Symbiote\Notifications\Controller\NotificationAdmin;
 
 class BroadcastNotification extends DataObject implements NotifiedOn
 {
@@ -103,5 +105,25 @@ class BroadcastNotification extends DataObject implements NotifiedOn
     {
         $context = $this->Context->getValues();
         return isset($context['Link']) ? $context['Link'] : null;
+    }
+
+    public function canCreate($member = null, $context = array())
+    {
+        return Permission::check('CMS_ACCESS_' . NotificationAdmin::class) || parent::canCreate($member, $context);
+    }
+
+    public function canDelete($member = null)
+    {
+        return Permission::check('CMS_ACCESS_' . NotificationAdmin::class) || parent::canDelete($member);
+    }
+
+    public function canView($member = null)
+    {
+        return $this->IsPublic || (Permission::check('CMS_ACCESS_' . NotificationAdmin::class) || parent::canView($member));
+    }
+
+    public function canEdit($member = null)
+    {
+        return Permission::check('CMS_ACCESS_' . NotificationAdmin::class) || parent::canEdit($member);
     }
 }
