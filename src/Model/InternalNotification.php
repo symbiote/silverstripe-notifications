@@ -9,7 +9,8 @@ use Symbiote\MultiValueField\ORM\FieldType\MultiValueField;
 use Symbiote\MultiValueField\Fields\KeyValueField;
 use SilverStripe\Security\Permission;
 
-class InternalNotification extends DataObject {
+class InternalNotification extends DataObject
+{
     private static $table_name = 'InternalNotification';
 
     private static $db = [
@@ -38,6 +39,15 @@ class InternalNotification extends DataObject {
 
     private static $default_sort = 'ID DESC';
 
+    public function onBeforeWrite()
+    {
+        parent::onBeforeWrite();
+
+        if ($this->IsRead) {
+            $this->IsSeen = true;
+        }
+    }
+
     public function getCMSFields()
     {
         $fields = parent::getCMSFields();
@@ -46,7 +56,8 @@ class InternalNotification extends DataObject {
         return $fields;
     }
 
-    public function canView($member = null) {
+    public function canView($member = null)
+    {
         $member = $member ?: Security::getCurrentUser();
         if (!$member) {
             return false;
@@ -57,7 +68,8 @@ class InternalNotification extends DataObject {
         return $member && (!$this->ID || $this->ToID == $member->ID || $this->FromID == $member->ID);
     }
 
-    public function canEdit($member = null) {
+    public function canEdit($member = null)
+    {
         $member = $member ?: Security::getCurrentUser();
         if (!$member) {
             return false;
@@ -67,5 +79,4 @@ class InternalNotification extends DataObject {
         }
         return $member && (!$this->ID || $this->ToID == $member->ID);
     }
-
 }
